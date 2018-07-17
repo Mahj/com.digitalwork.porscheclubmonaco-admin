@@ -1,0 +1,276 @@
+<div *ngIf="showCategories">
+  <form class="form-inline">
+  
+    <div class="form-group">
+      <input name="searchTerm" type="text" class="form-control" placeholder="Search" [(ngModel)]="searchTerm" (ngModelChange)="search()" style="width:400px;">
+    </div>
+    <div class="form-group" style="padding:10px;">
+      <span data-toggle="tooltip">
+        <button class=" btn btn-primary form-control" (click)="launchApp()">Open ionic app</button>
+      </span>
+</div>
+  </form>
+  <table class="table table-striped">
+    <tbody>
+      <tr>
+        <td>
+          <button type="button" class="btn btn-danger btn-lg" (click)="openModal(template, item, true)">
+            <i class="fa fa-plus"></i>
+          </button>
+        </td>
+        <td class="font-weight-bold">Name</td>
+        <td class="font-weight-bold">Description</td>
+        <td class="font-weight-bold">Show</td>
+        <td class="font-weight-bold">Type</td>
+        <td class="font-weight-bold">Total</td>
+        <td class="font-weight-bold" style="max-width:200px;">Img Bg</td>
+        <td class="font-weight-bold">Thumnail</td>
+      </tr>
+      <tr *ngFor="let item of items">
+        <td class='text-xs-center'>
+          <div ngbDropdown>
+            <button class="btn btn-primary btn-sm" id="options" ngbDropdownToggle (click)="getSubCategoryTotal(item); currentItem = item;">
+              <i class="fa fa-cog"></i>
+            </button>
+            <div ngbDropdownMenu aria-labelledby="options">
+              <a class="dropdown-item" data-toggle="modal" (click)="openModal(template, item, false)">
+                <i class="fa fa-pencil"></i> Edit
+              </a>
+              <a class="dropdown-item"
+                 [ngbPopover]="confirmation"
+                 #p="ngbPopover"
+                 triggers="manual"
+                 (click)="p.open(); pp = p;"
+                 placement="right"
+                 popoverTitle="Are you sure?">
+                <i class="fa fa-trash-o"></i> Delete
+              </a>
+
+              <a class="dropdown-item" data-toggle="modal" (click)="getSubCategory(item); currentItem = item;">
+                <i class="fa fa-cogs"></i> Manage sub-items ({{subsTotal}})
+              </a>
+            </div>
+          </div>
+        
+        </td>
+        <td> {{ item.name }} </td>
+        <td style="max-width:200px;"> {{ item.description }} </td>
+        <td> {{ item.show }} </td>
+        <td> {{ item.type }} </td>
+        <td> {{ item.total }} </td>
+        <td style="max-width:200px;overflow-x: scroll;"> {{ item.imgBg }} </td>
+        <td><a target="_blank" [href]="item.imgBg"> <img [src]="item.imgBg" width="100" onerror="this.src='./assets/no-image-found.jpg'" /> </a></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Edit Modal -->
+  <ng-template #template>
+    <div class="modal-header">
+      <h4 class="modal-title pull-left" *ngIf="!adding">Edit Places</h4>
+      <h4 class="modal-title pull-left" *ngIf="adding">Add New Places</h4>
+      <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form #heroForm="ngForm">
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" class="form-control" [(ngModel)]='model.name' name='name'>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea class="form-control" [(ngModel)]='model.description' name="description" style="width:100%; height:215px;"></textarea>
+        </div>
+        <div class="form-group">
+          <label>
+            <input type="checkbox" [(ngModel)]="model.show" name="show"> Show
+          </label>
+        </div>
+        <div class="form-group">
+          <label>Type</label>
+          <input type="text" class="form-control" [(ngModel)]='model.type' disabled="disabled" name='type'>
+        </div>
+        <div class="form-group">
+          <label>Total</label>
+          <input type="text" class="form-control" [(ngModel)]='model.total' name='total'>
+        </div>
+        <div class="form-group">
+          <label>Imagen Background</label>
+          <input type="text" class="form-control" [(ngModel)]='model.imgBg' name='imgBg'>
+          <img [src]="model.imgBg" width="100" style="margin:20px;" onerror="this.src='./assets/no-image-found.jpg'" />
+        </div>
+        <button type="submit" (click)="editOrAddRecord(model, false)" *ngIf="!adding" class="btn btn-primary float-right">Save</button>
+        <button type="submit" (click)="editOrAddRecord(model, true)" *ngIf="adding" class="btn btn-success float-right">Add</button>
+      </form>
+    </div>
+  </ng-template>
+
+  <!-- Confirmation Delete Modal -->
+  <ng-template #confirmation>
+    <div style="min-width:150px; text-align:center">
+      <button (click)="pp.close()" class="btn btn-success btn-sm">
+        <i class="fa fa-times"></i>
+      </button>
+      <button (click)="deleteRecord(currentItem)" class="btn btn-danger btn-sm">
+        <i class="fa fa-check"></i>
+      </button>
+
+    </div>
+  </ng-template>
+</div>
+
+<div *ngIf="!!showPlaceSub">
+  <ol style="margin-top:10px;" class="breadcrumb">
+    <li>
+      <button class="btn btn-primary" (click)="showViewHandler('category')"><i class="fa fa-arrow-left"></i></button>
+      <h3 style="display:inline; margin-left:10px;"> {{capitalCase(currentItem.type)}} / {{currentItem.name}}</h3>
+    </li>
+  </ol>
+  <table class="table table-striped">
+    <tbody>
+      <tr>
+        <td>
+          <button type="button" class="btn btn-danger btn-lg" (click)="openModalPlace(templatePlace, item, true)">
+            <i class="fa fa-plus"></i>
+          </button>
+        </td>
+        <td class="font-weight-bold">Name</td>
+        <td class="font-weight-bold">Description</td>
+        <td class="font-weight-bold">Address</td>
+        <td class="font-weight-bold">Location</td>
+        <td class="font-weight-bold">Phone</td>
+        <td class="font-weight-bold">Rate</td>
+        <td class="font-weight-bold">Web</td>
+        <td class="font-weight-bold">Latitude</td>
+        <td class="font-weight-bold">Longitude</td>
+        <td class="font-weight-bold">Big Image</td>
+        <td class="font-weight-bold">Thumnail</td>
+        <td class="font-weight-bold">Small Image</td>
+        <td class="font-weight-bold">Thumnail</td>
+      </tr>
+      <tr *ngFor="let sub of subs">
+        <td class='text-xs-center'>
+          <div ngbDropdown>
+            <button class="btn btn-primary btn-sm" id="options" ngbDropdownToggle (click)="currentItemPlace = sub;">
+              <i class="fa fa-cog"></i>
+            </button>
+            <div ngbDropdownMenu aria-labelledby="options">
+              <a class="dropdown-item" data-toggle="modal" (click)="openModalPlace(templatePlace, sub, false)">
+                <i class="fa fa-pencil"></i> Edit
+              </a>
+              <a class="dropdown-item"
+                 [ngbPopover]="confirmationPlace"
+                 #s="ngbPopover"
+                 triggers="manual"
+                 (click)="s.open(); ss = s;"
+                 placement="right"
+                 popoverTitle="Are you sure?">
+                <i class="fa fa-trash-o"></i> Delete
+              </a>
+            </div>
+          </div>
+
+        </td>
+        <td style="max-width:200px;"> {{ sub.name }} </td>
+        <td style="max-width:200px;"> {{ sub.description }} </td>
+        <td style="max-width:200px;"> {{ sub.address }} </td>
+        <td style="max-width:200px;"> {{ sub.location }} </td>
+        <td style="max-width:200px;"> {{ sub.phone }} </td>
+        <td style="max-width:200px;"> {{ sub.rate }} </td>
+        <td style="max-width:200px;"> {{ sub.web }} </td>
+        <td style="max-width:200px;"> {{ sub.lat }} </td>
+        <td style="max-width:200px;"> {{ sub.lng }} </td>
+
+        <td style="max-width:200px;overflow-x: scroll;"> {{ sub.imgBig }} </td>
+        <td><a target="_blank" [href]="sub.imgBig"> <img [src]="sub.imgBig" width="100" onerror="this.src='./assets/no-image-found.jpg'" /> </a></td>
+
+        <td style="max-width:200px;overflow-x: scroll;"> {{ sub.imgSmall }} </td>
+        <td><a target="_blank" [href]="sub.imgSmall"> <img [src]="sub.imgSmall" width="100" onerror="this.src='./assets/no-image-found.jpg'" /> </a></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Edit Modal Place -->
+  <ng-template #templatePlace>
+    <div class="modal-header">
+      <h4 class="modal-title pull-left" *ngIf="!adding">Edit Place</h4>
+      <h4 class="modal-title pull-left" *ngIf="adding">Add New Place</h4>
+      <button type="button" class="close pull-right" aria-label="Close" (click)="modalRefPlace.hide()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form #heroForm="ngForm">
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" class="form-control" [(ngModel)]='modelPlace.name' name='name'>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea class="form-control" [(ngModel)]='modelPlace.description' name="description" style="width:100%; height:215px;"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Address</label>
+          <input type="text" class="form-control" [(ngModel)]="modelPlace.address" name="address">
+        </div>
+        <div class="form-group">
+          <label>Location</label>
+          <input type="text" class="form-control" [(ngModel)]="modelPlace.location" name="location">
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="text" class="form-control" [(ngModel)]="modelPlace.phone" name="phone">
+        </div>
+        <div class="form-group">
+          <label>Rate</label>
+          <input type="number" class="form-control" [(ngModel)]="modelPlace.rate" name="rate">
+        </div>
+        <div class="form-group">
+          <label>Web</label>
+          <input type="url" class="form-control" [(ngModel)]="modelPlace.web" name="web">
+        </div>
+        <div class="form-group">
+          <label>Latitude</label>
+          <input type="text" class="form-control" [(ngModel)]="modelPlace.lat" name="lat">
+        </div>
+        <div class="form-group">
+          <label>Longitude</label>
+          <input type="text" class="form-control" [(ngModel)]="modelPlace.lng" name="lng">
+        </div>
+
+
+        <div class="form-group">
+          <label>Imagen Big</label>
+          <input type="text" class="form-control" [(ngModel)]='modelPlace.imgBig' name='imgBig'>
+          <img [src]="modelPlace.imgBig" width="100" style="margin:20px;" onerror="this.src='./assets/no-image-found.jpg'" />
+        </div>
+
+        <div class="form-group">
+          <label>Imagen Small</label>
+          <input type="text" class="form-control" [(ngModel)]='modelPlace.imgSmall' name='imgSmall'>
+          <img [src]="modelPlace.imgSmall" width="100" style="margin:20px;" onerror="this.src='./assets/no-image-found.jpg'" />
+        </div>
+
+        <button type="submit" (click)="editOrAddRecordPlace(modelPlace, false)" *ngIf="!adding" class="btn btn-primary float-right">Save</button>
+        <button type="submit" (click)="editOrAddRecordPlace(modelPlace, true)" *ngIf="adding" class="btn btn-success float-right">Add</button>
+      </form>
+    </div>
+  </ng-template>
+
+  <!-- Confirmation Delete Modal -->
+  <ng-template #confirmationPlace>
+    <div style="min-width:150px; text-align:center">
+      <button (click)="ss.close()" class="btn btn-success btn-sm">
+        <i class="fa fa-times"></i>
+      </button>
+      <button (click)="deleteRecordPlace(currentItemPlace)" class="btn btn-danger btn-sm">
+        <i class="fa fa-check"></i>
+      </button>
+
+    </div>
+  </ng-template>
+</div>
+
+<loading *ngIf="isLoading"></loading>

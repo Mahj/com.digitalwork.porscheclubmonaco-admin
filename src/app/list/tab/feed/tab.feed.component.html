@@ -1,0 +1,219 @@
+<div class="form-group" style="padding:10px;">
+  <button class=" btn btn-primary " (click)="launchApp()">Open ionic app</button>
+</div>
+<table class="table table-striped">
+    <tbody>
+        <tr>
+            <td>
+                <button type="button" class="btn btn-danger btn-lg" (click)="openModal(template, item, true); currentItem ={}">
+                    <i class="fa fa-plus"></i>
+                </button>
+            </td>
+          <td class="font-weight-bold">Name       </td>
+          <td class="font-weight-bold">Title      </td>
+          <td class="font-weight-bold">Comment    </td>
+          <td class="font-weight-bold">Description</td>
+          <td class="font-weight-bold">Image Profile </td>
+          <td class="font-weight-bold">Thumnail </td>
+          <td class="font-weight-bold">Image      </td>
+          <td class="font-weight-bold">Images     </td>
+          <td class="font-weight-bold">Like       </td>
+          <td class="font-weight-bold">Location   </td>
+          <td class="font-weight-bold">Post Date   </td>
+          <td class="font-weight-bold">Start Time  </td>
+        </tr>
+        <tr *ngFor="let item of feed$">
+            <td class='text-xs-center' style="width:100px;">
+             
+                   
+              <div ngbDropdown>
+                <button class="btn btn-primary btn-sm" id="options" ngbDropdownToggle (click)="currentItem = item;">
+                  <i class="fa fa-cog"></i>
+                </button>
+                <div ngbDropdownMenu aria-labelledby="options">
+                  <a class="dropdown-item" data-toggle="modal" (click)="openModal(template, item, false)">
+                    <i class="fa fa-pencil"></i> Edit
+                  </a>
+                  <a class="dropdown-item"
+                     [ngbPopover]="confirmation"
+                     #p="ngbPopover"
+                     triggers="manual"
+                     (click)="p.open(); pp = p;"
+                     placement="right"
+                     popoverTitle="Are you sure?">
+                    <i class="fa fa-trash-o"></i> Delete
+                  </a>
+                </div>
+              </div>
+
+
+            </td>
+          <td> {{ item.name        }} </td>
+          <td> {{ item.title       }} </td>
+          <td> {{ item.comment     }} </td>
+          <td> {{ item.description }} </td>
+          <td> {{ item.imgProfile  }} </td>
+          <td> <a target="_blank" [href]="item.imgProfile"> <img [src]="item.imgProfile" width="100" onerror="this.src='./assets/no-image-found.jpg'" /> </a> </td>
+          <td> {{ item.image       }} </td>
+          <td>
+              <i class="fa fa-arrows" (click)="openViewImgModal(viewImgs, item.images)"></i>
+          </td>
+          <td> {{ item.like        }} </td>
+          <td> {{ item.location    }} </td>
+          <td> {{ item.postDate    }} </td>
+          <td> {{ item.startTime   }} </td>
+        </tr>
+    </tbody>
+</table>
+
+
+<!-- Edit Modal -->
+<ng-template #template>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left" *ngIf="!adding">Edit Feed</h4>
+        <h4 class="modal-title pull-left" *ngIf="adding">Add New Feed</h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form #heroForm="ngForm">
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" class="form-control" [(ngModel)]='model.name' name='name'>
+            </div>
+            <div class="form-group">
+                <label>Title</label>
+                <input type="text" class="form-control" [(ngModel)]='model.title' name='title'>
+            </div>
+          <div class="form-group">
+            <label>Comment</label>
+            <input type="text" class="form-control" [(ngModel)]='model.comment' name='comment'>
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea style="width:100%; height:215px;" class="form-control" [(ngModel)]='model.description' name='description'></textarea>
+          </div>
+          <div class="form-group">
+            <label>Image Profile</label>
+            <input type="text" class="form-control" [(ngModel)]='model.imgProfile' name='imgProfile'>
+          </div>
+          <div class="form-group">
+            <img [src]="model.imgProfile" width="100" onerror="this.src='./assets/no-image-found.jpg'" />
+          </div>
+          <div class="form-group">
+            <label>Image</label>
+            <input type="text" class="form-control" [(ngModel)]='model.image' name='images'>
+          </div>
+          <div class="form-group">
+            <button class="btn btn-default" (click)="openEditImgModal(editImgs, model)">Add images</button>
+          </div>
+          <div class="form-group">
+            <label>Like</label>
+            <input type="text" class="form-control" [(ngModel)]='model.like' name='like'>
+          </div>
+          <div class="form-group">
+            <label>Location</label>
+            <input type="text" class="form-control" [(ngModel)]='model.location' name='location'>
+          </div>
+          <div class="form-group">
+            <label>Post Date</label>
+            <input type="text" class="form-control" [(ngModel)]='model.postDate' name='postDate'>
+          </div>
+          <div class="form-group">
+            <label>Start Time</label>
+            <input type="text" class="form-control" [(ngModel)]='model.startTime' name='startTime'>
+          </div>
+
+
+            <button type="submit" (click)="editOrAddRecord(model, false)" *ngIf="!adding" class="btn btn-primary float-right">Save</button>
+            <button type="submit" (click)="editOrAddRecord(model, true)" *ngIf="adding" class="btn btn-success float-right">Add</button>
+        </form>
+    </div>
+</ng-template>
+
+<!-- View images Modal -->
+<ng-template #viewImgs>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left" >View Images</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="viewImgModalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+
+    <table class="table table-striped">
+      <tbody>
+        <tr>
+          <td>Image Url</td>
+          <td>Thumnail</td>
+          </tr>
+
+        <tr  *ngFor="let img of viewImage">
+          <td>{{img.url}}</td>
+          <td><a target="_blank" [href]="img.imgProfile"> <img [src]="img.url" width="100" onerror="this.src='./assets/no-image-found.jpg'" /> </a></td>
+        </tr>
+        </tbody>
+      </table>
+
+
+  </div>
+</ng-template>
+
+<!-- Edit images Modal -->
+<ng-template #editImgs>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Edit Images</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="editImgModalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+
+    <table class="table table-striped">
+      <tbody>
+        <tr>
+          <td>Image Url</td>
+          <td>Thumnail</td>
+          <td></td>
+        </tr>
+
+        <tr *ngFor="let img of editImages.images; let i = index">
+          <td>{{img.url}}</td>
+          <td><a target="_blank" [href]="img.imgProfile"> <img [src]="img.url" width="100" onerror="this.src='./assets/no-image-found.jpg'" /> </a></td>
+          <td>
+            <button aria-haspopup="true" class="btn btn-danger btn-sm " id="deleteImg" aria-expanded="false" (click)="deleteImage(editImages.images, i)">
+              <i class="fa fa-trash-o"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <form #heroForm="ngForm">
+      <div class="form-group">
+        <label>Add img url</label>
+        <input type="text" class="form-control" [(ngModel)]='newImg' name='name'>
+      </div>
+      <div class="form-group">
+        <button class="btn btn-default" (click)="addImage(editImages)">Add Image</button>
+      </div>
+      </form>
+
+    <button type="button" (click)="editImgModalRef.hide()" class="btn btn-primary float-right">Done</button>
+</div>
+</ng-template>
+
+<!-- Confirmation Delete Modal -->
+<ng-template #confirmation>
+  <div style="min-width:150px; text-align:center">
+    <button (click)="pp.close()" class="btn btn-success btn-sm">
+      <i class="fa fa-times"></i>
+    </button>
+    <button (click)="deleteRecord(currentItem)" class="btn btn-danger btn-sm">
+      <i class="fa fa-check"></i>
+    </button>
+  </div>
+</ng-template>
+
+<loading *ngIf="isLoading"></loading>

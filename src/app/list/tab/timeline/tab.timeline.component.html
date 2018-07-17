@@ -1,0 +1,213 @@
+<div class="form-group" style="padding:10px;">
+  <button class=" btn btn-primary" (click)="launchApp()">Open ionic app</button>
+</div>
+
+<div class="tab-timeline">
+  <table class="table table-striped">
+    <tbody>
+      <tr>
+        <td>
+          <button type="button" class="btn btn-danger btn-lg" (click)="openModal(template, item, true)">
+            <i class="fa fa-plus"></i>
+          </button>
+        </td>
+        <td class="font-weight-bold">Date</td>
+        <td class="font-weight-bold">Lists</td>
+      </tr>
+      <tr *ngFor="let item of timeline$">
+        <td class='text-xs-center' style="width:100px">
+          <div ngbDropdown>
+            <button class="btn btn-primary btn-sm" id="options" ngbDropdownToggle (click)="currentItem = item;">
+              <i class="fa fa-cog"></i>
+            </button>
+            <div ngbDropdownMenu aria-labelledby="options">
+              <a class="dropdown-item" data-toggle="modal" (click)="openModal(template, item, false)">
+                <i class="fa fa-pencil"></i> Edit
+              </a>
+              <a class="dropdown-item"
+                 [ngbPopover]="confirmation"
+                 #p="ngbPopover"
+                 triggers="manual"
+                 (click)="p.open(); pp = p;"
+                 placement="right"
+                 popoverTitle="Are you sure?">
+                <i class="fa fa-trash-o"></i> Delete
+              </a>
+            </div>
+          </div>
+
+
+        </td>
+        <td style="width:200px">{{ datePickerObjToDate(item.date) | date: 'fullDate'}} </td>
+        <td>
+          <!--<span>{{item.lists | json}}</span>-->
+            <i class="fa fa-plus" (click)="openListsModal(lists, item.lists, true); currentItem = item;"></i>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+
+  <!-- Lists Modal -->
+  <ng-template #lists>
+    <div>
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Lists: {{currentItem.date | date: 'fullDate'}}</h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="listModalRef.hide()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-striped">
+          <tbody>
+            <tr>
+              <td class="font-weight-bold">
+                <button type="button" class="btn btn-danger btn-lg" (click)="openEditListModal(editlist, listModel, true)">
+                  <i class="fa fa-plus"></i>
+                </button>
+              </td>
+              <td class="font-weight-bold">Created Time </td>
+              <td class="font-weight-bold">Profile Name </td>
+              <td class="font-weight-bold">Description </td>
+              <td class="font-weight-bold">Profile Image</td>
+              <td class="font-weight-bold">Profile Thumnail</td>
+              <td class="font-weight-bold">Images</td>
+              <td class="font-weight-bold">Images Thumnail</td>
+            </tr>
+            <tr *ngFor="let e of listModel">
+              <td>
+                <div ngbDropdown>
+                  <button class="btn btn-primary btn-sm" id="options" ngbDropdownToggle >
+                    <i class="fa fa-cog"></i>
+                  </button>
+                  <div ngbDropdownMenu aria-labelledby="options">
+                    <a class="dropdown-item" data-toggle="modal" (click)="openEditListModal(editlist, e, false)">
+                      <i class="fa fa-pencil"></i> Edit
+                    </a>
+                    <a class="dropdown-item"
+                       [ngbPopover]="deleteitemconfirmation"
+                       #lp="ngbPopover"
+                       triggers="manual"
+                       (click)="lp.open(); lpp = lp;"
+                       placement="right"
+                       popoverTitle="Are you sure?">
+                      <i class="fa fa-trash-o"></i> Delete
+                    </a>
+                  </div>
+                </div>
+
+              </td>
+              <td> {{ e.createdTime }} </td>
+              <td> {{ e.profileName }} </td>
+              <td> {{ e.description }} </td>
+              <td> {{ e.profileImage}} </td>
+              <td>  <img [src]="e.profileImage" width="100" style="margin:20px 0px 20px 0px;" onerror="this.src='./assets/no-image-found.jpg'" /></td>
+              <td> {{ e.images}} </td>
+              <td> <img [src]="e.images" width="100" style="margin:20px 0px 20px 0px;" onerror="this.src='./assets/no-image-found.jpg'" /> </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- Edit list Modal -->
+  <ng-template #editlist>
+    <div class="modal-header">
+      <h4 class="modal-title pull-left" *ngIf="!adding">Edit List</h4>
+      <h4 class="modal-title pull-left" *ngIf="adding">Add New List</h4>
+      <button type="button" class="close pull-right" aria-label="Close" (click)="editListModalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form #heroForm="ngForm">
+        <div class="form-group">
+          <label>Created Time</label>
+          <input type="text" class="form-control" [(ngModel)]='editListModel.createdTime' name='createdTime'>
+        </div>
+        <!--<span>{{model.lists | json}}</span>-->
+        <div class="form-group">
+          <label>Profile Name</label>
+          <input type="text" class="form-control" [(ngModel)]='editListModel.profileName' name='profileName'>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea class="form-control" [(ngModel)]='editListModel.description' name="description" style="width:100%; height:215px;"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Profile Image</label>
+          <input type="text" class="form-control" [(ngModel)]='editListModel.profileImage' name='profileImage'>
+          <img [src]="editListModel.profileImage" width="100" style="margin:20px 0px 20px 0px;" onerror="this.src='./assets/no-image-found.jpg'" />
+        </div>
+        <div class="form-group">
+          <label>Images</label>
+          <input type="text" class="form-control" [(ngModel)]='editListModel.images' name='images'>
+          <img [src]="editListModel.images" width="100" style="margin:20px 0px 20px 0px;" onerror="this.src='./assets/no-image-found.jpg'" />
+        </div>
+        <button type="submit" (click)="editOrAddListRecord(editListModel, false)" *ngIf="!adding" class="btn btn-primary float-right">Save</button>
+        <button type="submit" (click)="editOrAddListRecord(editListModel, true)" *ngIf="adding" class="btn btn-success float-right">Add</button>
+      </form>
+    </div>
+  </ng-template>
+
+  <!-- Edit Modal -->
+  <ng-template #template>
+    <div class="modal-header">
+      <h4 class="modal-title pull-left" *ngIf="!adding">Edit Timeline</h4>
+      <h4 class="modal-title pull-left" *ngIf="adding">Add New Timeline</h4>
+      <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form #heroForm="ngForm">
+        <!--<div class="form-group">
+          <label>Date</label>
+          <input type="text" class="form-control" [(ngModel)]='model.date' name='date'>
+        </div>-->
+        <div class="form-group">
+          <div class="input-group">
+            <div style="margin:0 auto;">
+              <div style="margin:15px;">{{datePickerObjToDate(model.date) | date: 'fullDate'}}</div>
+
+              <ngb-datepicker [(ngModel)]="model.date" name="datePicker" #d="ngbDatepicker"></ngb-datepicker>
+              <!--<button class="btn btn-outline-secondary" (click)="d.toggle()" type="button"  ngbDatepicker>
+                <i class="fa fa-calendar" style="width: 1.2rem; height: 1rem; cursor: pointer;"></i>
+              </button>-->
+            </div>
+          </div>
+          </div>
+
+          <button type="submit" (click)="editOrAddRecord(model, false)" *ngIf="!adding" class="btn btn-primary float-right">Save</button>
+          <button type="submit" (click)="editOrAddRecord(model, true)" *ngIf="adding" class="btn btn-success float-right">Add</button>
+</form>
+    </div>
+  </ng-template>
+
+  <!-- Confirmation Delete Modal -->
+  <ng-template #confirmation>
+    <div style="min-width:150px; text-align:center">
+      <button (click)="pp.close()" class="btn btn-success btn-sm">
+        <i class="fa fa-times"></i>
+      </button>
+      <button (click)="deleteRecord(currentItem)" class="btn btn-danger btn-sm">
+        <i class="fa fa-check"></i>
+      </button>
+    </div>
+  </ng-template>
+
+  <!-- Confirmation Delete List item -->
+  <ng-template #deleteitemconfirmation>
+    <div style="min-width:150px; text-align:center">
+      <button (click)="lpp.close()" class="btn btn-success btn-sm">
+        <i class="fa fa-times"></i>
+      </button>
+      <button (click)="deleteListRecord(currentItem)" class="btn btn-danger btn-sm">
+        <i class="fa fa-check"></i>
+      </button>
+    </div>
+  </ng-template>
+</div>
+
+<loading *ngIf="isLoading"></loading>

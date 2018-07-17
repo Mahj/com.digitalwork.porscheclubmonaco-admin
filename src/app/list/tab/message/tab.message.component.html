@@ -1,0 +1,107 @@
+
+<div class="form-group" style="padding:10px;">
+  <button class=" btn btn-primary" (click)="launchApp()">Open ionic app</button>
+</div>
+<table class="table table-striped">
+    <tbody>
+        <tr>
+            <td>
+              <button type="button" class="btn btn-danger btn-lg" (click)="openModal(template, item, true); currentItem ={}">
+                <i class="fa fa-plus"></i>
+              </button>
+            </td>
+            <td class="font-weight-bold">Created Date</td>
+            <td class="font-weight-bold">Img Profile</td>
+            <td class="font-weight-bold">Message Body</td>
+            <td class="font-weight-bold">Message Title</td>
+            <td class="font-weight-bold">To Id</td>
+            <td class="font-weight-bold">To Name</td>
+        </tr>
+        <tr *ngFor="let item of (message$ | async)">
+            <td class='text-xs-center'>
+              <div ngbDropdown>
+                <button class="btn btn-primary btn-sm" id="options" ngbDropdownToggle (click)="currentItem = item;">
+                  <i class="fa fa-cog"></i>
+                </button>
+                <div ngbDropdownMenu aria-labelledby="options">
+                  <a class="dropdown-item" data-toggle="modal" (click)="openModal(template, item, false)">
+                    <i class="fa fa-pencil"></i> Edit
+                  </a>
+                  <a class="dropdown-item"
+                     [ngbPopover]="confirmation"
+                     #p="ngbPopover"
+                     triggers="manual"
+                     (click)="p.open(); pp = p;"
+                     placement="right"
+                     popoverTitle="Are you sure?">
+                    <i class="fa fa-trash-o"></i> Delete
+                  </a>
+                </div>
+              </div>
+
+            </td>
+            <td> {{ item.createdDate }} </td>
+            <td> {{ item.imgProfile }} </td>
+            <td> {{ item.messageBody }} </td>
+            <td> {{ item.messageTitle }} </td>
+            <td> {{ item.toId }} </td>
+            <td> {{ item.toName }} </td>
+        </tr>
+    </tbody>
+</table>
+
+
+<!-- Edit Modal -->
+<ng-template #template>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left" *ngIf="!adding">Edit Message</h4>
+        <h4 class="modal-title pull-left" *ngIf="adding">Add New Message</h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form #heroForm="ngForm">
+            <div class="form-group">
+                <label>Created Date</label>
+                <input type="text" class="form-control" [(ngModel)]='model.createdDate' name='createdDate'>
+            </div>
+            <div class="form-group">
+                <label>Img Profile</label>
+                <input type="text" class="form-control" [(ngModel)]='model.imgProfile' name='imgProfile'>
+            </div>
+            <div class="form-group">
+                <label>Message Body</label>
+                <input type="text" class="form-control" [(ngModel)]='model.messageBody' name='messageBody'>
+            </div>
+            <div class="form-group">
+                <label>Message Title</label>
+                <input type="text" class="form-control" [(ngModel)]='model.messageTitle' name='messageTitle'>
+            </div>
+            <div class="form-group">
+                <label>To Id</label>
+                <input type="text" class="form-control" [(ngModel)]='model.toId' name='toId'>
+            </div>
+            <div class="form-group">
+                <label>To Name</label>
+                <input type="text" class="form-control" [(ngModel)]='model.toName' name='toName'>
+            </div>
+            <button type="submit" (click)="editOrAddRecord(model, false)" *ngIf="!adding" class="btn btn-primary float-right">Save</button>
+            <button type="submit" (click)="editOrAddRecord(model, true)" *ngIf="adding" class="btn btn-success float-right">Add</button>
+        </form>
+    </div>
+</ng-template>
+
+<!-- Confirmation Delete Modal -->
+<ng-template #confirmation>
+  <div style="min-width:150px; text-align:center">
+    <button (click)="pp.close()" class="btn btn-success btn-sm">
+      <i class="fa fa-times"></i>
+    </button>
+    <button (click)="deleteRecord(currentItem)" class="btn btn-danger btn-sm">
+      <i class="fa fa-check"></i>
+    </button>
+  </div>
+</ng-template>
+
+<loading *ngIf="isLoading"></loading>

@@ -1,0 +1,118 @@
+<ul class="nav nav-tabs">
+  <!--<li class="nav-item">
+    <a class="nav-link"
+       routerLinkActive="active"
+       routerLink="/category" >Categories</a>
+  </li>-->
+  <li class="nav-item">
+    <a class="nav-link"
+       routerLinkActive="active"
+       routerLink="/shopping">Shopping</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link"
+       routerLinkActive="active"
+       routerLink="/restaurant">Restaurant</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link"
+       routerLinkActive="active"
+       routerLink="/cart">Cart</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link"
+       routerLinkActive="active"
+       routerLink="/places">Places</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link"
+       routerLinkActive="active"
+       routerLink="/chart" >Chart</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link"
+       routerLinkActive="active"
+       routerLink="/feed">Social Feed Cards</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link"
+       routerLinkActive="active"
+       routerLink="/contact">Contact</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link"
+       routerLinkActive="active"
+       routerLink="/gallery">Gallery</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link"
+       routerLinkActive="active"
+       routerLink="/map">Map Cards</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link"
+       routerLinkActive="active"
+       routerLink="/message">Message</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link"
+       routerLinkActive="active"
+       routerLink="/timeline">Timeline</a>
+  </li>
+  <li class="nav-item" *ngIf="isSuperAdmin">
+    <a class="nav-link"
+       routerLinkActive="active"
+       routerLink="/register">Add Admin Accounts</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link"
+       routerLinkActive="active"
+       routerLink="/data">Data Management</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link"
+       routerLinkActive="active"
+       routerLink="/push">Push Notification</a>
+  </li>
+  <!--<li class="nav-item">
+    <a class="nav-link"
+       routerLinkActive="active"
+       routerLink="/userprofile">User Profile</a>
+  </li>-->
+  </ul>
+
+<div class="tab-content">
+  <div class="tab-pane active">
+    <router-outlet></router-outlet>
+  </div>
+</div>
+
+  <!--<tabset>
+    <tab heading="Category">
+      <tab-category></tab-category>
+    </tab>
+    <tab heading="Chart">
+      <tab-chart></tab-chart>
+    </tab>
+    <tab heading="Contact">
+      <tab-contact></tab-contact>
+    </tab>
+    <tab heading="Gallery">
+      <tab-gallery></tab-gallery>
+    </tab>
+    <tab heading="Map">
+      <tab-map></tab-map>
+    </tab>
+    <tab heading="Message">
+      <tab-message></tab-message>
+    </tab>
+    <tab heading="Timeline">
+      <tab-timeline></tab-timeline>
+    </tab>
+    <tab heading="New">
+      <tab-userProfile></tab-userProfile>
+    </tab>
+    <tab heading="Data Manager">
+      <tab-data></tab-data>
+    </tab>
+  </tabset>-->
